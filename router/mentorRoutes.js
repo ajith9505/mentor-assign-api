@@ -7,16 +7,16 @@ const studentModel = require('../models/studentModel.js');
 //Add mentor
 routes.post("/add-mentor", async (req, res) => {
     try {
-        const mentor = await mentorModel.findOne({mentorName : req.body.mentorName}) 
+        const mentor = await mentorModel.findOne({ mentorName: req.body.mentorName })
         //Checking mentor already exist in list
-        if(mentor == null){
+        if (mentor == null) {
             const newMentor = new mentorModel({
                 mentorName: req.body.mentorName
             });
             await newMentor.save();
-            res.json({'message':'Mentor added successfully...','Data':newMentor});
+            res.json({ 'message': 'Mentor added successfully...', 'Data': newMentor });
         }
-        else{
+        else {
             res.send("Mentor already exist in mentor list...");
         }
     }
@@ -53,7 +53,7 @@ routes.post('/assign-students/:id', async (req, res) => {
         if (mentor != null) {
             students.forEach(async (student) => {
 
-                
+
                 const student2 = await studentModel.findOne({ studentName: student })
 
                 //Checking the student is not assigned to mentor
@@ -77,15 +77,16 @@ routes.post('/assign-students/:id', async (req, res) => {
                 else {
                     status1.push(`Mentor already assinged to ${student}`);
                 }
-                if (students[students.length - 1] == student) res.status(200).json({ 'status': status1 });
+                if (students[students.length - 1] == student) {
+                    mentor.save();
+                    res.status(200).json({ 'status': status1 });
+                }
             });
         }
         //If mentor is not exist in list
         else {
             res.status(200).json({ 'status': `Mentor not exist with id ${mentorId}` })
         }
-
-        mentor.save();
 
     }
     catch (error) {
@@ -97,7 +98,7 @@ routes.post('/assign-students/:id', async (req, res) => {
 routes.get('/students/:id', async (req, res) => {
     try {
         const mentor = await mentorModel.findOne({ _id: req.params.id })
-        if(mentor != null) res.status(200).json({ students: mentor.students });
+        if (mentor != null) res.status(200).json({ students: mentor.students });
         else res.status(200).json({ 'Message': 'Mentor is not exist with this ID...' })
     }
     catch (error) {

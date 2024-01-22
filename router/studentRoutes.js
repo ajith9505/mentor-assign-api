@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const studentModel = require('../models/studentModel');
+const mentorModel = require('../models/mentorModel');
 
 router.post('/add-student', async (req, res) => {
     const Name = req.body.studentName
@@ -46,7 +47,7 @@ router.get('/students-without-mentor', async (req, res) => {
             return student.mentorName == null;
         })
         res.status(200).send(studentsWithoutMentor);
-        
+
     }
     catch (error) {
         res.status(400).send(error);
@@ -56,18 +57,38 @@ router.get('/students-without-mentor', async (req, res) => {
 //Change mentor to particular particular student
 router.post('/change-mentor/:id', async (req, res) => {
     try {
-        const student = await studentModel.findOne({ _id: req.params.id })
+        const student = await studentModel.findOne({ _id: req.params.id });
+        const mentor = await mentorModel.findOne({ mentorName: req.body.mentorName });
 
-        if (student != null) {
-            await studentModel.findOneAndUpdate({ _id: req.params.id },
+        //Checking student and mentor exist in the list
+        if (student != null && mentor != null) {
+
+            //Changing mentor in specified student
+            const student1 = await studentModel.findOneAndUpdate({ _id: req.params.id },
                 {
                     $set: {
                         "previousMentorName": student.mentorName,
                         "mentorName": req.body.mentorName
                     }
                 })
+
+            //Removing student from previous mentor
+            await mentorModel.findOneAndUpdate({ mentorName: student.mentorName },
+                {
+                    $pull: {
+                        "students": student1
+                    }
+                });
+
+            //Adding student to current mentor
+            mentor.students.push(student1.studentName)
+
+            mentor.save();
             res.status(200).json({ message: "Mentor changed successfully..." });
         }
+        else if (mentor === null) res.status(200).json({ message: "Mentor is not exist in mentor list..." });
+
+        else res.status(200).json({ message: "Student is not exist in specified ID..." });
     }
     catch (error) {
         res.status(400).send(error);
