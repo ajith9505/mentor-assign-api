@@ -11,10 +11,10 @@ Created a API for add student and mentor in database using MongoDB Atlas and cre
 - /student/add-student
 - /student/
 - /student/students-without-mentor
+- /mentor/assign-students/:id
 - /student/change-mentor/:id
 - /mentor/students/:id
 - /student/student/previous-mentor/:id
-- /student/
 - /mentor/remove-students/:id
 
 ## Technology used:
