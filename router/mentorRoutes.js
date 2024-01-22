@@ -108,15 +108,15 @@ routes.get('/students/:id', async (req, res) => {
 
 
 //Remove Students
-// routes.put('/remove-students/:id', async (req, res) => {
-//     const mentorId = req.params.id;
-//     const students1 = req.body.students;
-//     const mentor = await Mentor.findOneAndUpdate({ _id: mentorId }, {
-//         $pullAll: {
-//             students: students1
-//         }
-//     })
-//     res.status(200).send(mentor);
-// })
+routes.put('/remove-students/:id', async (req, res) => {
+    const mentorId = req.params.id;
+    const students1 = req.body.students;
+    const mentor = await mentorModel.findOneAndUpdate({ _id: mentorId }, {
+        $pullAll: {
+            students: students1
+        }
+    })
+    res.status(200).send(mentor);
+})
 
 module.exports = routes;
