@@ -5,6 +5,7 @@ const studentModel = require('../models/studentModel');
 router.post('/add-student', async (req, res) => {
     const Name = req.body.studentName
     const student = await studentModel.findOne({ studentName: Name });
+    
     try {
         // Checking if student already exist in list
         if (student == null) {
@@ -23,8 +24,9 @@ router.post('/add-student', async (req, res) => {
     }
 });
 
-//Get students lst
+//Get students list
 router.get('/', async (req, res) => {
+
     try {
         const students = await studentModel.find();
         res.status(200).send(students);
@@ -33,6 +35,21 @@ router.get('/', async (req, res) => {
         res.status(400).send(error);
     }
 });
+
+//Get student list without mentor
+router.get('/students-without-mentor', async (req, res) => {
+    try {
+        const students = await studentModel.find();
+
+        let studentsWithoutMentor = students.filter(student => {
+            student.mentorName == null;
+        })
+        res.status(200).send(studentsWithoutMentor);
+    }
+    catch (error) {
+        res.status(400).send(error);
+    }
+})
 
 //Change mentor to particular particular student
 router.post('/change-mentor/:id', async (req, res) => {
@@ -58,7 +75,7 @@ router.post('/change-mentor/:id', async (req, res) => {
 //Get previous mentor
 router.get('/previous-mentor/:id', async (req, res) => {
     const student = await studentModel.findOne({ _id: req.params.id });
-    console.log();
+
     if (student != null && student.previousMentorName != null) {
         res.status(200).json({ "Previous Mentor": student.previousMentorName })
     }

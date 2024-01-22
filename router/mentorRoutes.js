@@ -14,7 +14,7 @@ routes.post("/add-mentor", async (req, res) => {
                 mentorName: req.body.mentorName
             });
             await newMentor.save();
-            res.send(newMentor);
+            res.json({'message':'Mentor added successfully...','Data':newMentor});
         }
         else{
             res.send("Mentor already exist in mentor list...");
@@ -97,7 +97,8 @@ routes.post('/assign-students/:id', async (req, res) => {
 routes.get('/students/:id', async (req, res) => {
     try {
         const mentor = await mentorModel.findOne({ _id: req.params.id })
-        res.status(200).json({ students: mentor.students });
+        if(mentor != null) res.status(200).json({ students: mentor.students });
+        else res.status(200).json({ 'Message': 'Mentor is not exist with this ID...' })
     }
     catch (error) {
         res.status(400).json(error);
