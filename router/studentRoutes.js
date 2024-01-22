@@ -75,7 +75,7 @@ router.post('/change-mentor/:id', async (req, res) => {
             //Removing student from previous mentor
             await mentorModel.findOneAndUpdate({ mentorName: student.mentorName },
                 {
-                    $pull: {
+                    $pullAll: {
                         "students": student1
                     }
                 });
