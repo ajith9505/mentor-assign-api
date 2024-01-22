@@ -5,7 +5,7 @@ const studentModel = require('../models/studentModel');
 router.post('/add-student', async (req, res) => {
     const Name = req.body.studentName
     const student = await studentModel.findOne({ studentName: Name });
-    
+
     try {
         // Checking if student already exist in list
         if (student == null) {
@@ -38,13 +38,15 @@ router.get('/', async (req, res) => {
 
 //Get student list without mentor
 router.get('/students-without-mentor', async (req, res) => {
+    const students = await studentModel.find();
+
     try {
-        const students = await studentModel.find();
 
         let studentsWithoutMentor = students.filter(student => {
-            student.mentorName == null;
+            return student.mentorName == null;
         })
         res.status(200).send(studentsWithoutMentor);
+        
     }
     catch (error) {
         res.status(400).send(error);
