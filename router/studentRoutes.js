@@ -4,17 +4,17 @@ const studentModel = require('../models/studentModel');
 
 router.post('/add-student', async (req, res) => {
     const Name = req.body.studentName
-    const student = await studentModel.findOne({studentName:Name});
+    const student = await studentModel.findOne({ studentName: Name });
     try {
         // Checking if student already exist in list
-        if(student == null){
+        if (student == null) {
             const newStudent = new studentModel({
                 studentName: Name
             })
             await newStudent.save();
             res.status(200).send('Student added successfully...');
         }
-        else{
+        else {
             res.status(200).send('Student already exist with same name...')
         }
     }
@@ -38,14 +38,17 @@ router.get('/', async (req, res) => {
 router.post('/change-mentor/:id', async (req, res) => {
     try {
         const student = await studentModel.findOne({ _id: req.params.id })
-        await studentModel.findOneAndUpdate({ _id: req.params.id },
-            {
-                $set: {
-                    "previousMentorName": student.mentorName,
-                    "mentorName": req.body.mentorName
-                }
-            })
-        res.status(200).json({ message: "Mentor changed successfully..." });
+
+        if (student != null) {
+            await studentModel.findOneAndUpdate({ _id: req.params.id },
+                {
+                    $set: {
+                        "previousMentorName": student.mentorName,
+                        "mentorName": req.body.mentorName
+                    }
+                })
+            res.status(200).json({ message: "Mentor changed successfully..." });
+        }
     }
     catch (error) {
         res.status(400).send(error);
@@ -56,7 +59,12 @@ router.post('/change-mentor/:id', async (req, res) => {
 router.get('/previous-mentor/:id', async (req, res) => {
     const student = await studentModel.findOne({ _id: req.params.id });
     console.log();
-    res.status(200).json({ "Previous Mentor": student.previousMentorName })
+    if (student != null && student.previousMentorName != null) {
+        res.status(200).json({ "Previous Mentor": student.previousMentorName })
+    }
+    else {
+        res.status(200).json({ "Status": 'Data is not available' })
+    }
 })
 
 module.exports = router;

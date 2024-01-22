@@ -5,8 +5,9 @@ const connectDB = require('./db/db');
 const bodyParser = require('body-parser');
 const mentorRouter = require('./router/mentorRoutes');
 const studentRouter = require('./router/studentRoutes');
+require("dotenv").config();
 
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 app.use(bodyParser.json());
 connectDB();
