@@ -76,7 +76,7 @@ router.post('/change-mentor/:id', async (req, res) => {
             const mentor1 = await mentorModel.findOneAndUpdate({ mentorName: student.mentorName },
                 {
                     $pull: {
-                        "students": { $in : student1 }
+                        students : student1
                     }
                 });
 
